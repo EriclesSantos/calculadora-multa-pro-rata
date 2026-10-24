@@ -2,9 +2,25 @@
 
 Aplicação local em Java 17 e Spring Boot que recebe arquivos TXT, CSV, XLS ou XLSX, valida registros e gera um Excel com as abas **Resumo**, **Resultado** e **Erros**.
 
-O projeto surgiu da necessidade de automatizar uma conferência que era feita manualmente em planilhas. O foco é o processamento no backend: receber o arquivo, validar os registros, aplicar os cálculos e entregar um relatório que permita conferir o resultado.
+Desenvolvi este projeto por iniciativa própria, inspirado em uma dificuldade da rotina de logística, durante minha preparação para migrar para a área de desenvolvimento. A proposta é automatizar uma conferência feita manualmente em planilhas. O foco é o processamento no backend: receber o arquivo, validar os registros, aplicar os cálculos e entregar um relatório que permita conferir o resultado.
 
 **Edição de portfólio com dados fictícios e regra didática.** A base embutida contém apenas três registros sintéticos. Os arquivos de exemplo, identificadores, operadoras e valores demonstrados são fictícios.
+
+## Demonstração em vídeo
+
+[![Baixar a demonstração da calculadora: código, processamento e resultados](docs/media/capa-video.png)](https://github.com/EriclesSantos/calculadora-multa-pro-rata/releases/download/v1.0.0/calculadora-linkedin-refinado.mp4)
+
+**Duração: aproximadamente 4min31s · Full HD · legendas em português · música de fundo em volume baixo.**
+
+Clique na capa para baixar a demonstração em MP4. O vídeo apresenta a organização do projeto no VS Code, o código do cálculo e os resultados gerados com dados fictícios.
+
+| Momento | Conteúdo |
+| --- | --- |
+| 01:05 | Estrutura do projeto: controllers, services e templates |
+| 02:33 | Código do cálculo proporcional no MultaService |
+| 03:09 | Relatório: resumo, resultados por registro e inconsistências |
+
+**[Baixar o vídeo completo](https://github.com/EriclesSantos/calculadora-multa-pro-rata/releases/download/v1.0.0/calculadora-linkedin-refinado.mp4)** · **[Baixar o aplicativo em JAR](https://github.com/EriclesSantos/calculadora-multa-pro-rata/releases/download/v1.0.0/calculadora-portfolio.jar)** · [Como executar](#baixar-o-aplicativo)
 
 ## Tecnologias
 
