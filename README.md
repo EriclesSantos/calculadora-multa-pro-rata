@@ -30,9 +30,23 @@ Histórico em banco de dados, dashboard e exportação em PDF são **próximos p
 
 ## Baixar o aplicativo
 
-Os pacotes desta edição estão na [release v1.0.0](https://github.com/EriclesSantos/calculadora-multa-pro-rata/releases/tag/v1.0.0). O aplicativo precisa de Java 17 ou superior. Extraia o ZIP completo e execute `iniciar-calculadora.cmd` no Windows.
+O aplicativo está pronto para testar, sem precisar compilar o projeto. Requisito: **Java 17 ou superior instalado**.
 
-O código também pode ser compilado seguindo as instruções abaixo. Os hashes SHA-256 dos pacotes estão disponíveis na release.
+- **[Baixar o JAR executável](https://github.com/EriclesSantos/calculadora-multa-pro-rata/releases/download/v1.0.0/calculadora-portfolio.jar)** — aproximadamente 43 MB.
+- **[Baixar o pacote para Windows](https://github.com/EriclesSantos/calculadora-multa-pro-rata/releases/download/v1.0.0/calculadora-portfolio-aplicativo.zip)** — contém o mesmo JAR e o iniciador `iniciar-calculadora.cmd`. Extraia o ZIP completo antes de abrir o iniciador.
+- [Ver todos os arquivos da release v1.0.0](https://github.com/EriclesSantos/calculadora-multa-pro-rata/releases/tag/v1.0.0).
+
+Para usar o JAR diretamente, abra o terminal na pasta em que ele foi salvo e execute:
+
+```powershell
+java -jar calculadora-portfolio.jar --calculadora.browser.auto-open=true
+```
+
+A aplicação inicia um servidor local e abre o navegador. Se a abertura automática não funcionar, acesse `http://127.0.0.1:48271/`. Clique em **Usar exemplo fictício** para experimentar o fluxo completo, usando os dados sintéticos fornecidos.
+
+O [SHA-256 do JAR](https://github.com/EriclesSantos/calculadora-multa-pro-rata/releases/download/v1.0.0/calculadora-portfolio.jar.sha256) e os hashes dos pacotes estão disponíveis na release. Esta é uma demonstração com regra didática; não utilizar para cobrança.
+
+O código também pode ser compilado seguindo as instruções abaixo.
 
 ## Aplicativo e resultados
 
