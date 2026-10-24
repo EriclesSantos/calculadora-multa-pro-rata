@@ -1,0 +1,5 @@
+DADOS SINTETICOS. Identificadores e telefones com prefixos zero nao representam linhas reais.
+Use solicitacao 2026-10-01, cancelamento 2026-10-15, duracao 12 meses.
+Operadoras ALFA=30, BETA=45, GAMA=60. Regra didatica: 20%. Pro-rata: 15 dias.
+Ha 12 registros completos e 2 inconsistencias propositais: operadora nao cadastrada e data invalida.
+Nao usar os resultados para cobranca.

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="application-name" content="nordhub-calculadora">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <title>NÖRDHUB | Calculadora de Multa e Pró-rata</title>
+    <style>
+        :root {
+            --roxo: #5632c8;
+            --roxo-escuro: #211842;
+            --roxo-claro: #f2efff;
+            --ciano: #2ee6ef;
+            --borda: #dedbea;
+            --texto: #211f2d;
+            --texto-suave: #6d687c;
+            --fundo: #090711;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 30px 18px;
+            background:
+                radial-gradient(circle at 18% 4%, rgba(83, 49, 183, .42), transparent 34%),
+                radial-gradient(circle at 88% 92%, rgba(46, 230, 239, .10), transparent 30%),
+                linear-gradient(145deg, #080610 0%, #171025 52%, #07060d 100%);
+            background-attachment: fixed;
+            color: var(--texto);
+        }
+        .container {
+            overflow: hidden;
+            background: rgba(255, 255, 255, .98);
+            padding: 28px;
+            border: 1px solid rgba(255, 255, 255, .16);
+            border-radius: 18px;
+            max-width: 1040px;
+            margin: auto;
+            box-shadow: 0 26px 70px rgba(0, 0, 0, .42), 0 0 0 1px rgba(90, 55, 180, .10);
+        }
+        .cabecalho {
+            position: relative;
+            margin: -28px -28px 28px;
+            padding: 20px 28px;
+            color: white;
+            background: linear-gradient(115deg, #0b0914 0%, #211842 58%, #161028 100%);
+            border-bottom: 2px solid rgba(46, 230, 239, .55);
+        }
+        .marca {
+            position: absolute;
+            top: 12px;
+            left: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            opacity: .52;
+        }
+        .marca img {
+            width: 27px;
+            height: 27px;
+            object-fit: cover;
+            border-radius: 7px;
+            box-shadow: 0 0 10px rgba(90, 54, 210, .45);
+        }
+        .marca-texto strong {
+            display: block;
+            font-size: 9px;
+            letter-spacing: .10em;
+        }
+        .marca-texto span {
+            display: none;
+        }
+        .titulo { padding: 0 72px; text-align: center; }
+        h1 { margin: 0 0 6px; font-size: 28px; }
+        .subtitulo { color: #c8c2dd; margin: 0; font-size: 14px; }
+        .detalhe-ciano {
+            position: absolute;
+            top: 50%;
+            right: 24px;
+            width: 44px;
+            height: 4px;
+            border-radius: 999px;
+            background: var(--ciano);
+            box-shadow: 0 0 16px rgba(46, 230, 239, .72);
+        }
+        h2 {
+            font-size: 18px;
+            margin: 26px 0 12px;
+            color: var(--roxo-escuro);
+        }
+        label { display: block; margin: 0 0 6px; font-weight: bold; }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--borda);
+            border-radius: 6px;
+            font-size: 15px;
+        }
+        input:focus { outline: 3px solid rgba(86, 50, 200, .16); border-color: var(--roxo); }
+        .grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .opcoes-calculo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .opcao { position: relative; }
+        .opcao input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .opcao span {
+            display: flex;
+            min-height: 72px;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            border: 2px solid var(--borda);
+            border-radius: 9px;
+            cursor: pointer;
+            transition: .15s ease;
+        }
+        .opcao input:checked + span {
+            color: var(--roxo-escuro);
+            border-color: var(--roxo);
+            background: var(--roxo-claro);
+            box-shadow: inset 0 0 0 1px rgba(86, 50, 200, .08);
+        }
+        .ajuda { margin: 9px 0 0; color: var(--texto-suave); font-size: 13px; line-height: 1.4; }
+        .operadora-item {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+            border: 1px solid var(--borda);
+            padding: 14px;
+            margin-top: 10px;
+            border-radius: 8px;
+            background: #fcfbff;
+        }
+        button {
+            border: 0;
+            border-radius: 7px;
+            padding: 11px 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-add { margin-top: 14px; color: var(--roxo-escuro); background: var(--roxo-claro); }
+        .btn-remover { color: #992e2e; background: #fbecec; }
+        .btn-submit {
+            margin-top: 24px;
+            width: 100%;
+            color: white;
+            background: linear-gradient(100deg, #322068, var(--roxo));
+            font-size: 16px;
+            box-shadow: 0 10px 24px rgba(73, 42, 164, .25);
+        }
+        .btn-submit:hover { filter: brightness(1.08); }
+        .campo-pro-rata.oculto { display: none; }
+        .arquivo { margin-top: 22px; }
+
+        @media (max-width: 760px) {
+            .grade, .opcoes-calculo { grid-template-columns: 1fr; }
+            .operadora-item { grid-template-columns: 1fr; }
+            .container { padding: 20px; }
+            .cabecalho {
+                margin: -20px -20px 24px;
+                padding: 20px;
+            }
+            .marca { top: 9px; left: 9px; }
+            .marca img { width: 22px; height: 22px; }
+            .marca-texto strong { font-size: 8px; }
+            .titulo { padding: 0 30px; }
+            .detalhe-ciano { display: none; }
+            h1 { font-size: 23px; }
+        }
+    </style>
+</head>
+<body>
+<main class="container">
+    <header class="cabecalho">
+        <div class="marca">
+            <img src="/nordhub-logo.png" alt="Logo NÖRDHUB">
+            <div class="marca-texto">
+                <strong>NÖRDHUB</strong>
+                <span>Soluções inteligentes</span>
+            </div>
+        </div>
+        <div class="titulo">
+            <h1>Calculadora de Multa e Pró-rata</h1>
+            <p class="subtitulo">Escolha o relatório, informe as datas e carregue a base de linhas.</p>
+        </div>
+        <span class="detalhe-ciano" aria-hidden="true"></span>
+    </header>
+
+    <aside style="padding:14px 16px;background:#f2efff;border-left:4px solid #5632c8;border-radius:8px;font-size:14px;line-height:1.5">
+        <strong>DEMONSTRAÇÃO PARA PORTFÓLIO · DADOS FICTÍCIOS</strong><br>
+        Use somente os arquivos sintéticos de exemplo. Operadoras e valores são ilustrativos.
+        A regra demonstrativa aplica <span th:text="${percentualDemonstracao}">20</span>% sobre o saldo calculado,
+        com mês de 30 dias e prazo convertido pela convenção de 365 dias/ano.
+        Pró-rata usa o mês civil. Não utilizar para cobrança ou como orientação jurídica.
+    </aside>
+    <p><a href="/exemplo.txt" download>Baixar TXT de exemplo</a> · <a href="/exemplo.xlsx" download>Baixar Excel de exemplo</a></p>
+    <button type="button" class="btn-add" onclick="carregarExemplo()">Usar exemplo fictício</button>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <h2>1. Tipo de cálculo</h2>
+        <div class="opcoes-calculo">
+            <label class="opcao">
+                <input type="radio" name="tipoCalculo" value="MULTA" checked>
+                <span>Somente cálculo da multa</span>
+            </label>
+            <label class="opcao">
+                <input type="radio" name="tipoCalculo" value="PRO_RATA">
+                <span>Somente pró-rata</span>
+            </label>
+            <label class="opcao">
+                <input type="radio" name="tipoCalculo" value="MULTA_E_PRO_RATA">
+                <span>Multa + pró-rata</span>
+            </label>
+        </div>
+
+        <h2>2. Dados do cálculo</h2>
+        <div class="grade">
+            <div>
+                <label for="nomeCliente">Nome do cliente</label>
+                <input id="nomeCliente" type="text" name="nomeCliente" placeholder="CLIENTE DEMONSTRAÇÃO" value="CLIENTE DEMONSTRAÇÃO">
+            </div>
+            <div>
+                <label for="duracao">Duração do contrato (meses)</label>
+                <input id="duracao" type="number" name="duracao" min="1" value="12" required>
+            </div>
+            <div>
+                <label for="dataSolicitacao">Data de solicitação</label>
+                <input id="dataSolicitacao" type="date" name="dataSolicitacao" required>
+            </div>
+            <div>
+                <label for="dataCancelamento">Data de cancelamento / fim de faturamento</label>
+                <input id="dataCancelamento" type="date" name="dataCancelamento" required>
+            </div>
+        </div>
+
+        <h2>3. Operadoras</h2>
+        <p class="ajuda campo-pro-rata oculto">
+            Nesta demonstração, os dias de pró-rata são sugeridos a partir do dia 1º do mês civil. O valor pode ser alterado antes de gerar o relatório.
+            Informe 0 ou deixe vazio quando não houver pró-rata para a operadora.
+        </p>
+        <div id="operadoras">
+            <div class="operadora-item"><div><label>Operadora</label><input type="text" name="operadora" value="ALFA" required></div><div><label>Tarifa mensal</label><input type="number" step="0.01" min="0" name="tarifa" value="30.00" required></div><div class="campo-pro-rata oculto"><label>Dias de pró-rata por chip</label><input type="number" min="0" max="62" name="diasProRata" disabled></div><button type="button" class="btn-remover" onclick="removerOperadora(this)">Remover</button></div>
+            <div class="operadora-item"><div><label>Operadora</label><input type="text" name="operadora" value="BETA" required></div><div><label>Tarifa mensal</label><input type="number" step="0.01" min="0" name="tarifa" value="45.00" required></div><div class="campo-pro-rata oculto"><label>Dias de pró-rata por chip</label><input type="number" min="0" max="62" name="diasProRata" disabled></div><button type="button" class="btn-remover" onclick="removerOperadora(this)">Remover</button></div>
+            <div class="operadora-item"><div><label>Operadora</label><input type="text" name="operadora" value="GAMA" required></div><div><label>Tarifa mensal</label><input type="number" step="0.01" min="0" name="tarifa" value="60.00" required></div><div class="campo-pro-rata oculto"><label>Dias de pró-rata por chip</label><input type="number" min="0" max="62" name="diasProRata" disabled></div><button type="button" class="btn-remover" onclick="removerOperadora(this)">Remover</button></div>
+        </div>
+
+        <button type="button" class="btn-add" onclick="addOperadora()">Adicionar operadora</button>
+
+        <div class="arquivo">
+            <label for="file">Arquivo (.xlsx, .xls, .csv ou .txt)</label>
+            <input id="file" type="file" name="file" accept=".xlsx,.xls,.csv,.txt" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Processar e baixar Excel</button>
+    <p id="status" role="status" aria-live="polite" style="line-height:1.5"></p>
+    </form>
+</main>
+
+<script>
+    const sessaoAplicacao = typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random()}`;
+
+    fetch(`/aplicacao/atividade?sessao=${encodeURIComponent(sessaoAplicacao)}`, {
+        method: "POST"
+    }).catch(() => {});
+
+    window.addEventListener("pagehide", () => {
+        navigator.sendBeacon(
+            `/aplicacao/encerrar?sessao=${encodeURIComponent(sessaoAplicacao)}`
+        );
+    });
+
+    const dataSolicitacao = document.getElementById("dataSolicitacao");
+    const dataCancelamento = document.getElementById("dataCancelamento");
+
+    async function carregarExemplo() {
+        const status = document.getElementById("status");
+        try {
+            const response = await fetch("/exemplo.txt");
+            if (!response.ok) throw new Error("Não foi possível carregar o exemplo.");
+            const transfer = new DataTransfer();
+            transfer.items.add(new File([await response.blob()], "exemplo-ficticio.txt", {type: "text/plain"}));
+            document.getElementById("file").files = transfer.files;
+            document.getElementById("nomeCliente").value = "CLIENTE DEMONSTRAÇÃO";
+            document.getElementById("duracao").value = "12";
+            dataSolicitacao.value = "2026-10-01";
+            dataCancelamento.value = "2026-10-15";
+            dataCancelamento.min = dataSolicitacao.value;
+            dataCancelamento.dispatchEvent(new Event("change"));
+            status.textContent = "Exemplo fictício carregado. Inclui duas inconsistências propositais para demonstrar a conferência.";
+        } catch (error) { status.textContent = error.message; }
+    }
+
+    function modoIncluiProRata() {
+        return document.querySelector('input[name="tipoCalculo"]:checked').value !== "MULTA";
+    }
+
+    function normalizarOperadora(valor) {
+        return (valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .toUpperCase().replace(/[^A-Z0-9]/g, "");
+    }
+
+    function calcularDiasProRata(operadora, dataFim) {
+        if (!dataFim) return "";
+        const [ano, mes, dia] = dataFim.split("-").map(Number);
+        const diaCiclo = 1;
+        let anoInicio = ano;
+        let mesInicio = mes - 1;
+        if (dia < diaCiclo) {
+            mesInicio--;
+            if (mesInicio < 0) { mesInicio = 11; anoInicio--; }
+        }
+        const ultimoDiaMesInicio = new Date(anoInicio, mesInicio + 1, 0).getDate();
+        const diaInicio = Math.min(diaCiclo, ultimoDiaMesInicio);
+        const inicio = Date.UTC(anoInicio, mesInicio, diaInicio);
+        const fim = Date.UTC(ano, mes - 1, dia);
+        return Math.floor((fim - inicio) / 86400000) + 1;
+    }
+
+    function atualizarDiasItem(item, forcar) {
+        const inputDias = item.querySelector('input[name="diasProRata"]');
+        if (!inputDias || (!forcar && inputDias.dataset.manual === "true")) return;
+        const operadora = item.querySelector('input[name="operadora"]').value;
+        inputDias.value = calcularDiasProRata(operadora, dataCancelamento.value);
+    }
+
+    function atualizarModo() {
+        const incluir = modoIncluiProRata();
+        document.querySelectorAll(".campo-pro-rata").forEach(campo => {
+            campo.classList.toggle("oculto", !incluir);
+            const input = campo.querySelector('input[name="diasProRata"]');
+            if (input) {
+                input.disabled = !incluir;
+                input.required = false;
+            }
+        });
+        if (incluir) {
+            document.querySelectorAll(".operadora-item").forEach(item => atualizarDiasItem(item, false));
+        }
+    }
+
+    function prepararItem(item) {
+        const inputOperadora = item.querySelector('input[name="operadora"]');
+        const inputDias = item.querySelector('input[name="diasProRata"]');
+        inputOperadora.addEventListener("input", () => atualizarDiasItem(item, false));
+        inputDias.addEventListener("input", () => { inputDias.dataset.manual = "true"; });
+        atualizarDiasItem(item, false);
+    }
+
+    function addOperadora() {
+        const div = document.createElement("div");
+        div.className = "operadora-item";
+        div.innerHTML = `
+            <div><label>Operadora</label><input type="text" name="operadora" required></div>
+            <div><label>Tarifa mensal</label><input type="number" step="0.01" min="0" name="tarifa" required></div>
+            <div class="campo-pro-rata ${modoIncluiProRata() ? "" : "oculto"}"><label>Dias de pró-rata por chip</label><input type="number" min="0" max="62" name="diasProRata" ${modoIncluiProRata() ? "" : "disabled"}></div>
+            <button type="button" class="btn-remover" onclick="removerOperadora(this)">Remover</button>`;
+        document.getElementById("operadoras").appendChild(div);
+        prepararItem(div);
+    }
+
+    function removerOperadora(botao) {
+        const itens = document.querySelectorAll(".operadora-item");
+        if (itens.length === 1) {
+            alert("Informe pelo menos uma operadora.");
+            return;
+        }
+        botao.closest(".operadora-item").remove();
+    }
+
+    dataSolicitacao.addEventListener("change", () => {
+        dataCancelamento.min = dataSolicitacao.value;
+        if (dataCancelamento.value && dataCancelamento.value < dataSolicitacao.value) {
+            dataCancelamento.value = "";
+        }
+    });
+
+    dataCancelamento.addEventListener("change", () => {
+        document.querySelectorAll('input[name="diasProRata"]').forEach(input => delete input.dataset.manual);
+        document.querySelectorAll(".operadora-item").forEach(item => atualizarDiasItem(item, true));
+    });
+
+    document.querySelectorAll('input[name="tipoCalculo"]').forEach(input => {
+        input.addEventListener("change", atualizarModo);
+    });
+    document.querySelector("form").addEventListener("submit", async event => {
+        event.preventDefault();
+        document.querySelectorAll('input[name="diasProRata"]:not(:disabled)').forEach(input => {
+            if (input.value.trim() === "") input.value = "0";
+        });
+        const form = event.currentTarget;
+        const status = document.getElementById("status");
+        const button = form.querySelector('[type="submit"]');
+        button.disabled = true;
+        status.textContent = "Processando o arquivo de demonstração…";
+        try {
+            const response = await fetch(form.action, { method: "POST", body: new FormData(form) });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.erro || "Confira os campos e o formato do arquivo.");
+            }
+            const url = URL.createObjectURL(await response.blob());
+            const link = document.createElement("a");
+            link.href = url; link.download = "resultado-demonstracao.xlsx"; link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+            status.textContent = "Relatório gerado. Confira as abas Resumo, Resultado e Erros no Excel baixado.";
+        } catch (error) {
+            status.textContent = error.message;
+        } finally { button.disabled = false; }
+    });
+    document.querySelectorAll(".operadora-item").forEach(prepararItem);
+    atualizarModo();
+</script>
+</body>
+</html>
