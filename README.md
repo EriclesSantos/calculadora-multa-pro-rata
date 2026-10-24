@@ -140,19 +140,6 @@ Com esse cenário, a multa simulada é R$ 586,60, o pró-rata é R$ 275,81 e o t
 
 O percentual de 20%, os valores e a convenção de cálculo são exemplos para demonstrar a implementação. **Não representam uma validação jurídica, uma fórmula universal de telecomunicações ou autorização para cobrança.** Esta edição substitui as condições comerciais vinculadas à empresa por um cenário didático.
 
-## Cuidados da edição de portfólio
-
-- Remoção da base real embutida e dos identificadores de clientes usados nos testes.
-- Operadoras e tarifas fictícias no formulário; arquivos sintéticos disponíveis no próprio aplicativo.
-- Aviso de demonstração no aplicativo e no Excel.
-- Validação estrita de datas, para que datas como 31/02 não sejam ajustadas silenciosamente pelo calendário.
-- Marcação de multa pendente e aviso de resultado parcial quando falta uma data válida.
-- Respostas de entrada inválida com HTTP 400 e mensagens legíveis na página.
-- Remoção de logs que exibiam cliente, nome de arquivo e condições comerciais.
-- Remoção do Excel temporário após o fechamento do download.
-
-O cálculo usa a data de cancelamento informada. Esse comportamento está coberto por testes.
-
 ## Validação realizada
 
 Em 24/10/2026, no Windows, com JDK 25 compilando para Java 17:
